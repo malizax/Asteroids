@@ -1,0 +1,5 @@
+Django>=3.0,<4.0                # Backend Framework
+psycopg2-binary>=2.8            # Honestly don't know the need for this yet
+djangorestframework >= 3.12     # Supposedly this is used for REST calls
+django-cors-headers == 3.7.0    # Handle CORS for Docker containers...
+#gunicorn

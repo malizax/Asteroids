@@ -1,0 +1,31 @@
+version: "3.8"
+   
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./asteroids-api/data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build:
+      context: ./asteroids-api
+      dockerfile: Dockerfile-dev
+    command: python manage.py runserver 0:3080
+    volumes:
+      - ./asteroids-api:/code
+    ports:
+      - "3080:3080"
+    depends_on:
+      - db
+  vue-ui:
+    build:
+      context: ./asteroids-vue
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    container_name: vue-ui
+    # volumes:
+    #    - ./asteroids-vue:/usr/src/asteroids-vue/
