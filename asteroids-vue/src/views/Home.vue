@@ -8,11 +8,18 @@
         <label for="to">To:</label>
         <input v-model="to_message" type="text" id="to"/>
         <p>Message To is: {{ to_message }}</p>
-        <input type="checkbox" id="checkbox" v-model="checked">
+        <input type="checkbox" id="checkbox" v-model="checked"
+        @change="callNASA()">
         <label for="checkbox"> {{ checked }}</label>
       </div>
       <div>
       {{ info }}
+      </div>
+      <div v-if="errored">
+        <p>REST call errored out?</p>
+      </div>
+      <div v-else>
+        <div v-if="loading">Loading...</div>
       </div>
     </section>
   </div>
@@ -27,8 +34,7 @@ let fM = 'YYYY-mm-dd';
 let readyFlag = false;
 let forV = fM;
 let toV = fM;
-//const apiKey = 'CsjJjfAJnjB42lman0uI6INY5jEWemqR7wFA4s7y';
-
+const apiKey = 'CsjJjfAJnjB42lman0uI6INY5jEWemqR7wFA4s7y';
 
 export default {
   name: 'home',
@@ -39,17 +45,50 @@ export default {
           from_message: forV,
           to_message: toV,
           checked: readyFlag,
-          info: null
+          info: null,
+          loading: true,
+          errored: false
           }
   },
+  methods: {
+      callNASA() {
+          alert('call NASA is called with a from value of ' +
+          this.from_message + ' and a to value of ' + this.to_message);
+          if(this.checked) {
+              axios
+              .get('https://api.nasa.gov/neo/rest/v1/feed?', {
+                  params: {
+                      start_date: this.from_message,
+                      end_date: this.to_message,
+                      api_key: apiKey
+                      }
+                })
+              .then(response => {
+                  this.info = response
+                })
+              .catch(error => {
+                  console.log(error)
+                  this.errored = true
+                })
+              .finally(() => this.loading = false)
+              }
+        }
+}
+,
+  computed: {
+      /*
+      axiosParams() {
+          const params = new URLSearcParams();
+          params.append('param1', this.from_message);
+          params.append('param2', this.to_message);
+          return params;
+          }
+          */
+      },
   mounted() {
-      if(readyFlag) {
-          axios
+      //if(readyFlag) {
           //.get('https://api.nasa.gov/neo/rest/v1/feed?start_date=' + forV +
           //'&end_date=' + toV + '&api_key=' + apiKey)
-          .get('https://api.nasa.gov/neo/rest/v1/feed?start_date=2021-08-01&end_date=2021-08-08&api_key=CsjJjfAJnjB42lman0uI6INY5jEWemqR7wFA4s7y')
-          .then(response => (this.info = response))
           }
-      }
-}
+  }
 </script>
